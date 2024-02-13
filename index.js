@@ -35,8 +35,7 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
   );
 
   // creating label
-  const labelDoesntExits = true;
-  if (labelDoesntExits) {
+  if (data.status !== 200) {
     await octokit.request(
       `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`,
       {
