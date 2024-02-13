@@ -1,35 +1,65 @@
-# Hello world javascript action
+# ⏰ Create custom challenges issues using Gemini AI!
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
+> [!NOTE]  
+> The [**`create-this-project@action`**](https://github.com/ArnavK-09/create-this-project/tree/action) project is a public **GitHub Action** available in the GitHub Marketplace.
+>
+> This project is powered by the **Google Gemini Pro API**, which enables seamless integration and efficient way to create challenge's data!
 
-## Inputs
+---
 
-### `who-to-greet`
+## 🥞 Setup Guide
 
-**Required** The name of the person to greet. Default `"World"`.
+> **To set up the `create-this-project@action` action, follow these steps:**
 
-## Outputs
+### 1. 🍬 **Action Setup**
 
-### `time`
-
-The time we greeted you.
-
-## Example usage
+- Visit the [GitHub Marketplace page](https://github.com/marketplace/actions/create-this-project) for the action.
+- Click on the "Set up a workflow" button.
+- Choose the repository where you want to use the action.
+- Add ` GEMINI_API_KEY ` secret in your repository secrets from settings
+- Create a new workflow file (e.g., `.github/workflows/convert-pull-request-title.yml`).
+- **Add the following code to the workflow file:**
 
 ```yaml
-on: [push]
+name: Convert Pull Req Title Into Conventional Commit Scheme!
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
-  hello_world_job:
+  convert:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    permissions: 
+      pull-requests: write
     steps:
-      - name: Hello world action step
-        id: hello
-        uses: octocat/hello-world-javascript-action@v1.1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Action to create issues stating ideas for new projects!
+        uses: ArnavK-09/create-this-project@main
         with:
-          who-to-greet: "Mona the Octocat"
-      # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+### 2. 🍬 **Action Inputs**
+
+| Input Name       | Description                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------- |
+| `gemini_api_key` | The API key for accessing the Google Gemini LLM API.                                                            |
+| `token`          | The GitHub token for authentication and authorization. Use `${{ secrets.GITHUB_TOKEN }}` to access it securely. |
+
+> [!TIP]
+>
+> ##### 🍗 Example Usage 
+> You can pewview this action working **[here](https://github.com/ArnavK-09/create-this-project/issues)!**
+
+---
+
+## 🎋 Links
+
+- [GitHub Action: create-this-project](https://github.com/marketplace/actions/create-this-project)
+- [Repository: ArnavK-09/create-this-project](https://github.com/ArnavK-09/create-this-project/tree/action)
+
+<p align="center"><strong>🌟 Star this repo :) </strong></p>
