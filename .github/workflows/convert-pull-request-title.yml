@@ -1,0 +1,21 @@
+name: Convert Pull Req Title Into Conventional Commit Scheme!
+
+on:
+  pull_request:
+    types: ['opened']
+    branches: ['action']
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    permissions: 
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Convert Pull Request Title into Conventional Commit Scheme
+        uses: ArnavK-09/convert_pull_req_title_into_conventional_commit_scheme@main
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
