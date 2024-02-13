@@ -2,13 +2,13 @@ name: Convert Pull Req Title Into Conventional Commit Scheme!
 
 on:
   pull_request:
-    types: ['opened']
-    branches: ['action']
+    types: ["opened"]
+    branches: ["action"]
 
 jobs:
   convert:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       pull-requests: write
     steps:
       - name: Checkout repository

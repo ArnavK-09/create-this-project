@@ -13,15 +13,85 @@ const getRandomItemFromArray = (arr) =>
   arr[Math.floor(Math.random() * arr.length)];
 
 /**
+ * Generates random color hex
+ */
+const generateRandomColor = () =>
+  Math.floor(Math.random() * 16777215).toString(16);
+
+/**
+ * Create label for repo if not there
+ * @param {string} label
+ * @param octokit
+ * @param {string} repo
+ */
+const createLabelIfNotThere = async (label, octokit, repo) => {
+  // checking label there
+  const data = await octokit.request(
+    `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`,
+    {
+      ...repo,
+      name: label.toString(),
+    },
+  );
+
+  // creating label
+  const labelDoesntExits = true;
+  if (labelDoesntExits) {
+    await octokit.request(
+      `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`,
+      {
+        ...repo,
+        name: label.toString(),
+        color: generateRandomColor(),
+      },
+    );
+  }
+};
+
+/**
  * Create prompt for google's gemini
  * @param {string} lib
+ * @param {string} difficulty
  * @param {string?} custom_prompt
  * @returns string
  */
-const generateGeminiPrompt = (lib, custom_prompt) => {
+const generateGeminiPrompt = (lib, difficulty, custom_prompt) => {
   return `
-        
-    `.trim();
+# Your task is to give me a programming challenge of ${lib.toUpperCase()} of difficulty ${difficulty.toUpperCase()}. Act like you don't know how to resolve this challenge.
+${custom_prompt ? `You shall follow this instructions: ${custom_prompt}` : ""} 
+
+# !! Your response should be in JSON format strictly following scheme:-
+{
+  title: 'Title for challege including emoji at starting',
+  body: 'Description for this challenge with requirements and example and minimal guidance! MAKE SURE YOU TYPE BODY IN MARKDOWN! '
+}
+  
+# Extra instructions:-
+Make sure you respond with a challenge in respect to ${lib}.
+Response with only raw JSON content, not in codeblock.
+
+# Examples:-
+Text: Library - Vue && Difficulty - HARD.
+Response JSON:
+{
+  title: '📷 Create a social media app in Vue.js',
+  body: '
+    ## Create a fully functional social media app
+    > (in depth description for challenge in single medium-sized paragraph)
+    ## Required Features:-
+    - Able to bookmark posts
+    - like user posts
+    - auth
+    - ....other requirements mentioned sepcifically in short
+
+    (give extra guidance for completion in some paragraphs, inclue code blocks also if neccesary for preview)
+      
+
+    ### Summary
+    > (type a little summary for this challenge...)
+  '
+}
+  `.trim();
 };
 
 /**
@@ -32,13 +102,16 @@ const executeAction = async () => {
     /**
      * Fetching all inputs
      */
+    const GH_REPO = github.context.repo;
     const GH_G_API_KEY = core.getInput("gemini_api_key", { required: true });
     const GH_USER_TOKEN = core.getInput("token", { required: true });
+    const GH_LIBS_INPUT = core.getInput("libs", { required: true });
+    const GH_ISSUE_DIFFCULTIES = core.getInput("difficulties", {
+      required: true,
+    });
     const GH_ISSUE_ADDITIIONS = core.getInput("custom_additions", {
       required: false,
     });
-    const GH_REPO = github.context.repo;
-    const GH_LIBS_INPUT = core.getInput("libs", { required: true });
     core.notice(`Repo Owner: ${GH_REPO.owner}\nRepo Name: ${GH_REPO.repo}`);
 
     /**
@@ -57,6 +130,15 @@ const executeAction = async () => {
     core.notice(`User mentioned these libs: ${GH_LIBS}`);
 
     /**
+     * Parsing diffculties by user
+     */
+    const GH_DIFFCULTIES = [];
+    GH_ISSUE_DIFFCULTIES.trim()
+      .split(",")
+      .forEach((diff) => GH_DIFFCULTIES.push(diff.toString()));
+    core.notice(`User mentioned these difficulties: ${GH_ISSUE_DIFFCULTIES}`);
+
+    /**
      * Creating new Gemini API Client Instance
      * Also, new gemini-pro model
      */
@@ -64,17 +146,33 @@ const executeAction = async () => {
     const GOOGLE_GEMINI = GOOGLE_AI.getGenerativeModel({ model: "gemini-pro" });
 
     /**
-     * Get random lib
+     * Get random lib & difficulty
      */
     const LIB = getRandomItemFromArray(GH_LIBS);
-    core.notice("Choose this Lib:- ", LIB);
+    core.notice("Choosen Lib:- ", LIB);
+
+    /**
+     * Get difficulty
+     */
+    const DIFFICULTY = getRandomItemFromArray(GH_ISSUE_DIFFCULTIES);
+    core.notice("Choosen Difficulty:- ", DIFFICULTY);
 
     /**
      * Generating title with gemini
      */
     const NEW_ISSUE_CONTENT_RAW = await GOOGLE_GEMINI.generateContent(
-      generateGeminiPrompt(GH_ISSUE_ADDITIIONS),
+      generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined),
     );
+
+    /**
+     * Regulating Labels
+     */
+    const ISSUE_LABELS = [DIFFICULTY, LIB];
+    ISSUE_LABELS.forEach(async (x) => {
+      await createLabelIfNotThere(x, octokit, GH_REPO).catch((e) =>
+        core.error("Faile to create label for ", x, "\n", e),
+      );
+    });
 
     /**
      * Parse content
@@ -90,6 +188,7 @@ const executeAction = async () => {
       ...GH_REPO,
       title: ISSUE_DATA.title ?? `Create me project for '${LIB}'`,
       body: ISSUE_DATA.description ?? "",
+      labels: ISSUE_LABELS,
     });
     core.debug("Action completed");
   } catch (error) {

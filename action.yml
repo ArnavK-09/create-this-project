@@ -13,6 +13,14 @@ inputs:
   custom_additions:
     description: "Any extra custom additions you want in issue creations..."
     required: false
+  libs:
+    description: "Give libs or languages for ideas to choose from...seperated by commas"
+    required: false
+    default:
+  difficulties:
+    description: "Give difficulties for ideas to choose from...seperated by commas"
+    required: false
+    default: Hard, Medium, Easy, Super-Easy, Hardest, Moderate
   token:
     description: "The token to use to access the GitHub API..."
     required: true
