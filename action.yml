@@ -1,0 +1,22 @@
+name: "Publish Idea as Issue"
+description: "Action to create issues stating ideas for new projects!"
+author: ArnavK-09
+
+branding:
+  icon: "help-circle"
+  color: "green"
+
+inputs:
+  gemini_api_key:
+    description: "Your Google Gemini API Key..."
+    required: true
+  custom_additions:
+    description: "Any extra custom additions you want in issue creations..."
+    required: false
+  token:
+    description: "The token to use to access the GitHub API..."
+    required: true
+
+runs:
+  using: "node20"
+  main: "dist/index.js"
