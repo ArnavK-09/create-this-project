@@ -2,13 +2,13 @@ name: Initiate Challenges...
 
 on:
   schedule:
-    - cron: '2 * * * *'
+    - cron: '5 * * * *'
 
 jobs:
   convert:
     runs-on: ubuntu-latest
     permissions: 
-      pull-requests: write
+      issues: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
