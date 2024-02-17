@@ -31880,9 +31880,9 @@ const executeAction = async () => {
     /**
      * Generating title with gemini
      */
-    const NEW_ISSUE_CONTENT_RAW = await GOOGLE_GEMINI.generateContent(
+    const NEW_ISSUE_CONTENT = await GOOGLE_GEMINI.generateContent(
       generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
-    ).response.text();
+    );
     core.notice("Using prompt:-" + generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
 
     /**
@@ -31899,8 +31899,8 @@ const executeAction = async () => {
      * Parse content
      */
     core.notice("Issue Data:- ", NEW_ISSUE_CONTENT_RAW)
-    const ISSUE_DATA = JSON.parse(NEW_ISSUE_CONTENT_RAW.trim());
-    core.debug("Data from Gemini:-\n" + ISSUE_DATA);
+    const ISSUE_DATA = JSON.parse(NEW_ISSUE_CONTENT.response.text().trim());
+    core.debug("Data from Gemini:-\n" + ISSUE_DATA.response.text());
 
     /**
      * Create a comment on the PR with the information we compiled from the
