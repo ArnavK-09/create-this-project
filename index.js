@@ -27,17 +27,13 @@ const generateRandomColor = () =>
  * @param {string} repo
  */
 const createLabelIfNotThere = async (label, octokit, repo) => {
-    try {
+  
         // checking label there
         core.debug(`Fetching Label:- ${label}`)
         const data = await octokit.request(
-            `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
-            ...repo,
-            name: label.toString(),
-        },
-        );
-        core.debug(data)
-        if (data.status == 404) {
+            `GET /repos/${repo.owner}/${repo.repo}/labels/${label});
+        core.debug(data.staths)
+        if (data.status !== 404) {
             // creating new label
             const COLOR = generateRandomColor().replace("#", "")
             core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`)
@@ -50,18 +46,6 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
             );
         }
 
-    } catch {
-        // creating new label
-        const COLOR = generateRandomColor().replace("#", "")
-        core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`)
-        await octokit.request(
-            `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
-            ...repo,
-            name: label.toString(),
-            color: COLOR,
-        },
-        );
-    }
 };
 
 /**
