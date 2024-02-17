@@ -21,15 +21,14 @@
 - **Add the following code to the workflow file:**
 
 ```yaml
-name: Initiate Challenges...
+name: Post Project Idea as Issue...
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '5 24 * * *' # Every Day
+    - cron: '0 0 * * *' # Every Day
 
 jobs:
-  convert:
+  idea_as_issue:
     runs-on: ubuntu-latest
     permissions: 
       issues: write
