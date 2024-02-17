@@ -164,7 +164,7 @@ const executeAction = async () => {
     const NEW_ISSUE_CONTENT = await GOOGLE_GEMINI.generateContent(
       generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
     );
-    core.notice("Using prompt:-" + generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
+    core.debug("Using prompt:-" + generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
 
     /**
      * Regulating Labels
@@ -180,8 +180,9 @@ const executeAction = async () => {
      * Parse content
      */
     const RES = NEW_ISSUE_CONTENT.response.text().toString().trim();
-    core.notice(`Gemini's Response:- ${RES}`)
+    core.debug(`Gemini's Raw Response:- ${RES}`)
     const ISSUE_DATA = JSON.parse(RES)
+    core.notice(`Gemini's JSON Response:- ${ISSUE_DATA}`)
 
     /**
      * Create a comment on the PR with the information we compiled from the
@@ -190,7 +191,7 @@ const executeAction = async () => {
     await octokit.rest.issues.create({
       ...GH_REPO,
       title: ISSUE_DATA.title ?? `Create me project for '${LIB}'`,
-      body: ISSUE_DATA.description ?? "",
+      body: ISSUE_DATA.body ?? "",
       labels: ISSUE_LABELS,
     });
     core.debug("Action completed");
