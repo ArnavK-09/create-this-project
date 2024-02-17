@@ -183,7 +183,7 @@ const executeAction = async () => {
     const RES = NEW_ISSUE_CONTENT.response.text().toString().trim();
     core.debug(`Gemini's Raw Response:- ${RES}`)
     const ISSUE_DATA = JSON.parse(RES)
-    core.notice(`Gemini's JSON Response:- ${ISSUE_DATA}`)
+    core.notice(`Gemini's JSON Response:- ${JSON.stringify(ISSUE_DATA)}`)
 
     /**
      * Create a comment on the PR with the information we compiled from the
