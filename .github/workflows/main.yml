@@ -3,7 +3,7 @@ name: Initiate Challenges...
 on:
   workflow_dispatch:
   schedule:
-    - cron: '5 * * * *'
+    - cron: '5 24 * * *' # Every Day
 
 jobs:
   convert:
@@ -16,4 +16,3 @@ jobs:
         with:
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          
