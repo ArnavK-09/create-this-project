@@ -31898,7 +31898,7 @@ const executeAction = async () => {
     /**
      * Parse content
      */
-    core.notice("Issue Data:- ", NEW_ISSUE_CONTENT_RAW)
+    core.notice("Issue Data:- ", NEW_ISSUE_CONTENT)
     const ISSUE_DATA = JSON.parse(NEW_ISSUE_CONTENT.response.text().trim());
     core.debug("Data from Gemini:-\n" + ISSUE_DATA.response.text());
 
