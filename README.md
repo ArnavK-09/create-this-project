@@ -21,23 +21,21 @@
 - **Add the following code to the workflow file:**
 
 ```yaml
-name: Convert Pull Req Title Into Conventional Commit Scheme!
+name: Initiate Challenges...
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '5 24 * * *' # Every Day
 
 jobs:
   convert:
     runs-on: ubuntu-latest
     permissions: 
-      pull-requests: write
+      issues: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Action to create issues stating ideas for new projects!
-        uses: ArnavK-09/create-this-project@main
+        uses: ArnavK-09/create-this-project@action
         with:
           gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
