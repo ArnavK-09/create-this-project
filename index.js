@@ -178,8 +178,8 @@ const executeAction = async () => {
          */
         const ISSUE_LABELS = [DIFFICULTY, LIB];
         ISSUE_LABELS.forEach(async (x) => {
-            await createLabelIfNotThere(x, octokit, GH_REPO)
-                .catch(() => core.notice(`Failed To Create Label For ${x}`))
+            createLabelIfNotThere(x, octokit, GH_REPO)
+                /*.catch(() => core.notice(`Failed To Create Label For ${x}`))*/
         })
 
         /**
