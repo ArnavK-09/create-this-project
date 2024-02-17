@@ -31756,6 +31756,7 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
 
   // creating label
   if (data.status !== 200) {
+    core.notice("Creating Label For:- ", label)
     await octokit.request(
       `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`,
       {
@@ -31880,8 +31881,9 @@ const executeAction = async () => {
      * Generating title with gemini
      */
     const NEW_ISSUE_CONTENT_RAW = await GOOGLE_GEMINI.generateContent(
-      generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined),
+      generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
     );
+    core.notice("Using prompt:-", generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
 
     /**
      * Regulating Labels
@@ -31889,13 +31891,14 @@ const executeAction = async () => {
     const ISSUE_LABELS = [DIFFICULTY, LIB];
     ISSUE_LABELS.forEach(async (x) => {
       await createLabelIfNotThere(x, octokit, GH_REPO).catch((e) =>
-        core.error("Faile to create label for ", x, "\n", e),
+        core.error("Failed to create label for ", x, "\n", e),
       );
     });
 
     /**
      * Parse content
      */
+    core.notice("Issue Data:- ", NEW_ISSUE_CONTENT_RAW)
     const ISSUE_DATA = JSON.parse(NEW_ISSUE_CONTENT_RAW.trim());
     core.debug("Data from Gemini:-\n", ISSUE_DATA);
 
