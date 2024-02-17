@@ -31,7 +31,7 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
         // checking label there
         core.debug(`Fetching Label:- ${label}`)
         const data = await octokit.request(
-            `GET /repos/${repo.owner}/${repo.repo}/labels/${label});
+            `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`);
         core.debug(data.staths)
         if (data.status !== 404) {
             // creating new label
