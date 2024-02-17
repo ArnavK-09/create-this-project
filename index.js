@@ -162,7 +162,7 @@ const executeAction = async () => {
      */
     const NEW_ISSUE_CONTENT_RAW = await GOOGLE_GEMINI.generateContent(
       generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
-    );
+    ).response.text();
     core.notice("Using prompt:-" + generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
 
     /**
