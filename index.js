@@ -36,7 +36,7 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
 
   // creating label
   if (data.status !== 200) {
-    core.notice("Creating Label For:- ", label)
+    core.notice("Creating Label For:- " + label)
     await octokit.request(
       `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`,
       {
@@ -149,13 +149,13 @@ const executeAction = async () => {
      * Get random lib & difficulty
      */
     const LIB = getRandomItemFromArray(GH_LIBS);
-    core.notice("Choosen Lib:- ", LIB);
+    core.notice("Choosen Lib:- " + LIB);
 
     /**
      * Get difficulty
      */
     const DIFFICULTY = getRandomItemFromArray(GH_ISSUE_DIFFCULTIES);
-    core.notice("Choosen Difficulty:- ", DIFFICULTY);
+    core.notice("Choosen Difficulty:- " + DIFFICULTY);
 
     /**
      * Generating title with gemini
@@ -163,7 +163,7 @@ const executeAction = async () => {
     const NEW_ISSUE_CONTENT_RAW = await GOOGLE_GEMINI.generateContent(
       generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
     );
-    core.notice("Using prompt:-", generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
+    core.notice("Using prompt:-" + generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
 
     /**
      * Regulating Labels
@@ -171,7 +171,7 @@ const executeAction = async () => {
     const ISSUE_LABELS = [DIFFICULTY, LIB];
     ISSUE_LABELS.forEach(async (x) => {
       await createLabelIfNotThere(x, octokit, GH_REPO).catch((e) =>
-        core.error("Failed to create label for ", x, "\n", e),
+        core.error("Failed to create label for:- " + x + "\n" + e.message),
       );
     });
 
@@ -180,7 +180,7 @@ const executeAction = async () => {
      */
     core.notice("Issue Data:- ", NEW_ISSUE_CONTENT_RAW)
     const ISSUE_DATA = JSON.parse(NEW_ISSUE_CONTENT_RAW.trim());
-    core.debug("Data from Gemini:-\n", ISSUE_DATA);
+    core.debug("Data from Gemini:-\n" + ISSUE_DATA);
 
     /**
      * Create a comment on the PR with the information we compiled from the
