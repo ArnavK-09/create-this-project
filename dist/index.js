@@ -31747,16 +31747,16 @@ const generateRandomColor = () =>
  * @param {string} repo
  */
 const createLabelIfNotThere = async (label, octokit, repo) => {
-    // checking label there
-    const data = await octokit.request(
-        `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
-            ...repo,
-            name: label.toString(),
-        },
-    );
-
-    // creating label
-    if (data.status !== 200) {
+    try {
+        // checking label there
+        const data = await octokit.request(
+            `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
+                ...repo,
+                name: label.toString(),
+            },
+        );
+    } catch {
+        // creating new label
         const COLOR = generateRandomColor().replace("#", "")
         core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`)
         await octokit.request(
