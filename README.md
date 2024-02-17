@@ -50,7 +50,7 @@ jobs:
 > [!TIP]
 >
 > ##### 🍗 Example Usage 
-> You can pewview this action working **[here](https://github.com/ArnavK-09/create-this-project/issues)!**
+> You can preview this action working **[here](https://github.com/ArnavK-09/create-this-project/issues)!**
 
 ---
 
