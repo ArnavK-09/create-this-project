@@ -16,7 +16,7 @@ inputs:
   libs:
     description: "Give libs or languages for ideas to choose from...seperated by commas"
     required: false
-    default: Javascript, Typescript, Python, Scala, React.js, Angular, Vue, Nodejs, Discord.js, Pygame, Brainfuck
+    default: Javascript, Typescript, Python, Scala, React.js, Angular, Vue, Nodejs, Discord.js, Pygame
   difficulties:
     description: "Give difficulties for ideas to choose from...seperated by commas"
     required: false

@@ -31723,20 +31723,22 @@ var __webpack_exports__ = {};
  */
 const core = __nccwpck_require__(4430);
 const github = __nccwpck_require__(3039);
-const { GoogleGenerativeAI } = __nccwpck_require__(4621);
+const {
+    GoogleGenerativeAI
+} = __nccwpck_require__(4621);
 
 /**
  * Returns random item from array
  * @param {any[]} array
  */
 const getRandomItemFromArray = (arr) =>
-  arr[Math.floor(Math.random() * arr.length)];
+    arr[Math.floor(Math.random() * arr.length)];
 
 /**
  * Generates random color hex
  */
 const generateRandomColor = () =>
-  Math.floor(Math.random() * 16777215).toString(16);
+    Math.floor(Math.random() * 16777215).toString(16);
 
 /**
  * Create label for repo if not there
@@ -31745,28 +31747,26 @@ const generateRandomColor = () =>
  * @param {string} repo
  */
 const createLabelIfNotThere = async (label, octokit, repo) => {
-  // checking label there
-  const data = await octokit.request(
-    `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`,
-    {
-      ...repo,
-      name: label.toString(),
-    },
-  );
-
-  // creating label
-  if (data.status !== 200) {
-    const COLOR = generateRandomColor().replace("#", "")
-    core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`)
-    await octokit.request(
-      `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`,
-      {
-        ...repo,
-        name: label.toString(),
-        color: COLOR,
-      },
+    // checking label there
+    const data = await octokit.request(
+        `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
+            ...repo,
+            name: label.toString(),
+        },
     );
-  }
+
+    // creating label
+    if (data.status !== 200) {
+        const COLOR = generateRandomColor().replace("#", "")
+        core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`)
+        await octokit.request(
+            `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
+                ...repo,
+                name: label.toString(),
+                color: COLOR,
+            },
+        );
+    }
 };
 
 /**
@@ -31777,7 +31777,7 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
  * @returns string
  */
 const generateGeminiPrompt = (lib, difficulty, custom_prompt) => {
-  return `
+    return `
 # Your task is to give me a programming challenge of ${lib.toUpperCase()} of difficulty ${difficulty.toUpperCase()}. Act like you don't know how to resolve this challenge.
 ${custom_prompt ? `You shall follow this instructions: ${custom_prompt}` : ""} 
 
@@ -31791,144 +31791,151 @@ ${custom_prompt ? `You shall follow this instructions: ${custom_prompt}` : ""}
 Make sure you respond with a challenge in respect to ${lib}.
 Response with only raw and VALID JSON content, not in codeblock.
 `.trim();
-/*
-# Examples:-
-Text: Library - Vue && Difficulty - HARD.
-Response JSON:
-{
-  title: '📷 Create a social media app in Vue.js',
-  body: '
-    ## Create a fully functional social media app
-    > (in depth description for challenge in single medium-sized paragraph)
-    ## Required Features:-
-    - Able to bookmark posts
-    - like user posts
-    - auth
-    - ....other requirements mentioned sepcifically in short
+    /*
+    # Examples:-
+    Text: Library - Vue && Difficulty - HARD.
+    Response JSON:
+    {
+      title: '📷 Create a social media app in Vue.js',
+      body: '
+        ## Create a fully functional social media app
+        > (in depth description for challenge in single medium-sized paragraph)
+        ## Required Features:-
+        - Able to bookmark posts
+        - like user posts
+        - auth
+        - ....other requirements mentioned sepcifically in short
 
-    (give extra guidance for completion in some paragraphs, inclue code blocks also if neccesary for preview)
-      
+        (give extra guidance for completion in some paragraphs, inclue code blocks also if neccesary for preview)
+          
 
-    ### Summary
-    > (type a little summary for this challenge...)
-  '
-}*/
-  
+        ### Summary
+        > (type a little summary for this challenge...)
+      '
+    }*/
+
 };
 
 /**
  * Executing action
  */
 const executeAction = async () => {
-  try {
-    /**
-     * Fetching all inputs
-     */
-    const GH_REPO = github.context.repo;
-    const GH_G_API_KEY = core.getInput("gemini_api_key", { required: true });
-    const GH_USER_TOKEN = core.getInput("token", { required: true });
-    const GH_LIBS_INPUT = core.getInput("libs", { required: true });
-    const GH_ISSUE_DIFFCULTIES = core.getInput("difficulties", {
-      required: true,
-    });
-    const GH_ISSUE_ADDITIIONS = core.getInput("custom_additions", {
-      required: false,
-    });
-    core.notice(`Repo Owner: ${GH_REPO.owner}\nRepo Name: ${GH_REPO.repo}`);
+    try {
+        /**
+         * Fetching all inputs
+         */
+        const GH_REPO = github.context.repo;
+        const GH_G_API_KEY = core.getInput("gemini_api_key", {
+            required: true
+        });
+        const GH_USER_TOKEN = core.getInput("token", {
+            required: true
+        });
+        const GH_LIBS_INPUT = core.getInput("libs", {
+            required: true
+        });
+        const GH_ISSUE_DIFFCULTIES = core.getInput("difficulties", {
+            required: true,
+        });
+        const GH_ISSUE_ADDITIIONS = core.getInput("custom_additions", {
+            required: false,
+        });
+        core.notice(`Repo Owner: ${GH_REPO.owner}\nRepo Name: ${GH_REPO.repo}`);
 
-    /**
-     * Creating github client
-     */
-    const octokit = new github.getOctokit(GH_USER_TOKEN);
-    core.debug("Created github client");
+        /**
+         * Creating github client
+         */
+        const octokit = new github.getOctokit(GH_USER_TOKEN);
+        core.debug("Created github client");
 
-    /**
-     * Parsing Libs by user
-     */
-    const GH_LIBS = [];
-    GH_LIBS_INPUT.trim()
-      .split(",")
-      .forEach((lib) => GH_LIBS.push(lib.toString()));
-    core.notice(`User mentioned these libs: ${GH_LIBS}`);
+        /**
+         * Parsing Libs by user
+         */
+        const GH_LIBS = [];
+        GH_LIBS_INPUT.trim()
+            .split(",")
+            .forEach((lib) => GH_LIBS.push(lib.toString()));
+        core.notice(`User mentioned these libs: ${GH_LIBS}`);
 
-    /**
-     * Parsing diffculties by user
-     */
-    const GH_DIFFCULTIES = [];
-    GH_ISSUE_DIFFCULTIES.trim()
-      .split(",")
-      .forEach((diff) => GH_DIFFCULTIES.push(diff.toString()));
-    core.notice(`User mentioned these difficulties: ${GH_ISSUE_DIFFCULTIES}`);
+        /**
+         * Parsing diffculties by user
+         */
+        const GH_DIFFCULTIES = [];
+        GH_ISSUE_DIFFCULTIES.trim()
+            .split(",")
+            .forEach((diff) => GH_DIFFCULTIES.push(diff.toString()));
+        core.notice(`User mentioned these difficulties: ${GH_ISSUE_DIFFCULTIES}`);
 
-    /**
-     * Creating new Gemini API Client Instance
-     * Also, new gemini-pro model
-     */
-    const GOOGLE_AI = new GoogleGenerativeAI(GH_G_API_KEY);
-    const GOOGLE_GEMINI = GOOGLE_AI.getGenerativeModel({ model: "gemini-pro" });
+        /**
+         * Creating new Gemini API Client Instance
+         * Also, new gemini-pro model
+         */
+        const GOOGLE_AI = new GoogleGenerativeAI(GH_G_API_KEY);
+        const GOOGLE_GEMINI = GOOGLE_AI.getGenerativeModel({
+            model: "gemini-pro"
+        });
 
-    /**
-     * Get random lib & difficulty
-     */
-    const LIB = getRandomItemFromArray(GH_LIBS);
-    core.notice("Choosen Lib:- " + LIB);
+        /**
+         * Get random lib & difficulty
+         */
+        const LIB = getRandomItemFromArray(GH_LIBS);
+        core.notice("Choosen Lib:- " + LIB);
 
-    /**
-     * Get difficulty
-     */
-    const DIFFICULTY = getRandomItemFromArray(GH_DIFFCULTIES);
-    core.notice("Choosen Difficulty:- " + DIFFICULTY);
+        /**
+         * Get difficulty
+         */
+        const DIFFICULTY = getRandomItemFromArray(GH_DIFFCULTIES);
+        core.notice("Choosen Difficulty:- " + DIFFICULTY);
 
-    /**
-     * Generating title with gemini
-     */
-    const NEW_ISSUE_CONTENT = await GOOGLE_GEMINI.generateContent(
-      generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
-    );
-    core.debug("Using prompt:-" + generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
+        /**
+         * Generating title with gemini
+         */
+        const NEW_ISSUE_CONTENT = await GOOGLE_GEMINI.generateContent(
+            generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
+        );
+        core.debug("Using prompt:-" + generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined))
 
-    /**
-     * Regulating Labels
-     */
-    const ISSUE_LABELS = [DIFFICULTY, LIB];
-    ISSUE_LABELS.forEach(async (x) => {
-      await createLabelIfNotThere(x, octokit, GH_REPO).catch((e) =>
-        core.error("Failed to create label for:- " + x + "\n" + e.message),
-      );
-    });
+        /**
+         * Regulating Labels
+         */
+        const ISSUE_LABELS = [DIFFICULTY, LIB];
+        ISSUE_LABELS.forEach(async (x) => {
+            await createLabelIfNotThere(x, octokit, GH_REPO).catch((e) =>
+                core.error("Failed to create label for:- " + x + " || " + e.message),
+            );
+        });
 
-    /**
-     * Parse content
-     */
-    const RES = NEW_ISSUE_CONTENT.response.text().toString().trim();
-    core.debug(`Gemini's Raw Response:- ${RES}`)
-    const ISSUE_DATA = JSON.parse(RES)
-    core.notice(`Gemini's JSON Response:- ${ISSUE_DATA}`)
+        /**
+         * Parse content
+         */
+        const RES = NEW_ISSUE_CONTENT.response.text().toString().trim();
+        core.debug(`Gemini's Raw Response:- ${RES}`)
+        const ISSUE_DATA = JSON.parse(RES)
+        core.debug(`Gemini's JSON Response:- ${JSON.stringify(ISSUE_DATA)}`)
 
-    /**
-     * Create a comment on the PR with the information we compiled from the
-     * list of changed files.
-     */
-    await octokit.rest.issues.create({
-      ...GH_REPO,
-      title: ISSUE_DATA.title ?? `Create me project for '${LIB}'`,
-      body: ISSUE_DATA.body ?? "",
-      labels: ISSUE_LABELS,
-    });
-    core.debug("Action completed");
-  } catch (error) {
-    /**
-     * Any error during action recorded
-     */
-    core.setFailed(error);
-  }
+        /**
+         * Create a comment on the PR with the information we compiled from the
+         * list of changed files.
+         */
+        await octokit.rest.issues.create({
+            ...GH_REPO,
+            title: ISSUE_DATA.title ?? `Create me project for '${LIB}'`,
+            body: ISSUE_DATA.body ?? "",
+            labels: ISSUE_LABELS,
+        });
+        core.debug("Action completed");
+    } catch (error) {
+        /**
+         * Any error during action recorded
+         */
+        core.setFailed(error);
+    }
 };
 
 /**
  * Initializing action to create issue
  */
 executeAction();
-
 })();
 
 module.exports = __webpack_exports__;
