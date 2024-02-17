@@ -2,7 +2,7 @@ name: Initiate Challenges...
 
 on:
   schedule:
-    - cron: '5 * * * *'
+    - cron: '5 * * * 5'
 
 jobs:
   convert:
