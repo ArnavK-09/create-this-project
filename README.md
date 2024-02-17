@@ -57,7 +57,7 @@ jobs:
 
 ## 🎋 Links
 
-- [GitHub Action: create-this-project](https://github.com/marketplace/actions/create-this-project)
+- [GitHub Action: create-this-project](https://github.com/marketplace/actions/publish-idea-as-issue)
 - [Repository: ArnavK-09/create-this-project](https://github.com/ArnavK-09/create-this-project/tree/action)
 
 <p align="center"><strong>🌟 Star this repo :) </strong></p>
