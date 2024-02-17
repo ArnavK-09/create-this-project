@@ -62,14 +62,15 @@ ${custom_prompt ? `You shall follow this instructions: ${custom_prompt}` : ""}
 
 # !! Your response should be in JSON format strictly following scheme:-
 {
-  title: 'Title for challege including emoji at starting',
-  body: 'Description for this challenge with requirements and example and minimal guidance! MAKE SURE YOU TYPE BODY IN MARKDOWN! '
+  "title": "Title for challege including emoji at starting",
+  "body": "Description for this challenge with requirements and example and minimal guidance! MAKE SURE YOU TYPE BODY IN MARKDOWN! use \\n for new lines"
 }
   
 # Extra instructions:-
 Make sure you respond with a challenge in respect to ${lib}.
-Response with only raw JSON content, not in codeblock.
-
+Response with only raw and VALID JSON content, not in codeblock.
+`.trim();
+/*
 # Examples:-
 Text: Library - Vue && Difficulty - HARD.
 Response JSON:
@@ -90,8 +91,8 @@ Response JSON:
     ### Summary
     > (type a little summary for this challenge...)
   '
-}
-  `.trim();
+}*/
+  
 };
 
 /**
@@ -178,9 +179,9 @@ const executeAction = async () => {
     /**
      * Parse content
      */
-    core.notice("Issue Data:- ", NEW_ISSUE_CONTENT)
-    const ISSUE_DATA = JSON.parse(NEW_ISSUE_CONTENT.response.text().trim());
-    core.debug("Data from Gemini:-\n" + ISSUE_DATA.response.text());
+    const RES = NEW_ISSUE_CONTENT.response.text().toString().trim();
+    core.notice(`Gemini's Response:- ${RES}`)
+    const ISSUE_DATA = JSON.parse(RES)
 
     /**
      * Create a comment on the PR with the information we compiled from the
