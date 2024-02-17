@@ -13,7 +13,7 @@
 
 ### 1. 🍬 **Action Setup**
 
-- Visit the [GitHub Marketplace page](https://github.com/marketplace/actions/create-this-project) for the action.
+- Visit the [GitHub Marketplace page](https://github.com/marketplace/actions/publish-idea-as-issue) for the action.
 - Click on the "Set up a workflow" button.
 - Choose the repository where you want to use the action.
 - Add ` GEMINI_API_KEY ` secret in your repository secrets from settings
