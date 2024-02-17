@@ -155,7 +155,7 @@ const executeAction = async () => {
     /**
      * Get difficulty
      */
-    const DIFFICULTY = getRandomItemFromArray(GH_ISSUE_DIFFCULTIES);
+    const DIFFICULTY = getRandomItemFromArray(GH_DIFFCULTIES);
     core.notice("Choosen Difficulty:- " + DIFFICULTY);
 
     /**
