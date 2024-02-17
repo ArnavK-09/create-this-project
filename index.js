@@ -36,13 +36,14 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
 
   // creating label
   if (data.status !== 200) {
-    core.notice("Creating Label For:- " + label)
+    const COLOR = generateRandomColor().replace("#", "")
+    core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`)
     await octokit.request(
       `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`,
       {
         ...repo,
         name: label.toString(),
-        color: generateRandomColor(),
+        color: COLOR,
       },
     );
   }
