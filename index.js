@@ -62,7 +62,7 @@ ${custom_prompt ? `You shall follow this instructions: ${custom_prompt}` : ""}
 # !! Your response should be in JSON format strictly following scheme:-
 {
   "title": "Title for challege including emoji at starting",
-  "body": "Description for this challenge with requirements and example and minimal guidance! MAKE SURE YOU TYPE BODY IN MARKDOWN! use \\n for new lines"
+  "body": "Description for this challenge with requirements and example and minimal guidance! MAKE SURE YOU TYPE BODY IN MARKDOWN! use \\n for new lines, give content of body in single line, to make VALID JSON STRING"
 }
   
 # Extra instructions:-
