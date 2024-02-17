@@ -180,7 +180,7 @@ const executeAction = async () => {
          */
         const ISSUE_LABELS = [DIFFICULTY, LIB];
         ISSUE_LABELS.forEach(async (x) => {
-            await createLabelIfNotThere(x, octokit, GH_REPO).catch((e) => {
+            await createLabelIfNotThere(x, octokit, GH_REPO).catch(async (e) => {
 
         // creating new label
         const COLOR = generateRandomColor().replace("#", "")

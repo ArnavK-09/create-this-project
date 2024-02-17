@@ -31747,7 +31747,7 @@ const generateRandomColor = () =>
  * @param {string} repo
  */
 const createLabelIfNotThere = async (label, octokit, repo) => {
-    try {
+   /* try {*/
         // checking label there
         const data = await octokit.request(
             `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
@@ -31755,7 +31755,7 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
                 name: label.toString(),
             },
         );
-    } catch {
+   /* } catch {
         // creating new label
         const COLOR = generateRandomColor().replace("#", "")
         core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`)
@@ -31766,7 +31766,7 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
                 color: COLOR,
             },
         );
-    }
+    }*/
 };
 
 /**
@@ -31900,9 +31900,19 @@ const executeAction = async () => {
          */
         const ISSUE_LABELS = [DIFFICULTY, LIB];
         ISSUE_LABELS.forEach(async (x) => {
-            await createLabelIfNotThere(x, octokit, GH_REPO).catch((e) =>
-                core.error("Failed to create label for:- " + x + " || " + e.message),
-            );
+            await createLabelIfNotThere(x, octokit, GH_REPO).catch(async (e) => {
+
+        // creating new label
+        const COLOR = generateRandomColor().replace("#", "")
+        core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`)
+        await octokit.request(
+            `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
+                ...GH_REPO,
+                name: x.toString(),
+                color: COLOR,
+            },
+        );
+});
         });
 
         /**
