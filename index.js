@@ -30,12 +30,11 @@ const createLabelIfNotThere = async (label, octokit, repo) => {
   const data = await octokit.request(
     `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`,
   );
-  core.debug(data.status);
   if (data.status !== 200) {
     // creating new label
     const COLOR = generateRandomColor().replace("#", "");
     core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`);
-    await octokit.request(
+    octokit.request(
       `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`,
       {
         ...repo,
@@ -68,28 +67,6 @@ ${custom_prompt ? `You shall follow this instructions: ${custom_prompt}` : ""}
 Make sure you respond with a challenge in respect to ${lib}.
 Response with only raw and VALID JSON content, not in codeblock.
 `.trim();
-  /*
-    # Examples:-
-    Text: Library - Vue && Difficulty - HARD.
-    Response JSON:
-    {
-      title: '📷 Create a social media app in Vue.js',
-      body: '
-        ## Create a fully functional social media app
-        > (in depth description for challenge in single medium-sized paragraph)
-        ## Required Features:-
-        - Able to bookmark posts
-        - like user posts
-        - auth
-        - ....other requirements mentioned sepcifically in short
-
-        (give extra guidance for completion in some paragraphs, inclue code blocks also if neccesary for preview)
-          
-
-        ### Summary
-        > (type a little summary for this challenge...)
-      '
-    }*/
 };
 
 /**
@@ -178,9 +155,8 @@ const executeAction = async () => {
      * Regulating Labels
      */
     const ISSUE_LABELS = [DIFFICULTY, LIB];
-    ISSUE_LABELS.forEach(async (x) => {
+    ISSUE_LABELS.forEach((x) => {
       createLabelIfNotThere(x, octokit, GH_REPO);
-      /*.catch(() => core.notice(`Failed To Create Label For ${x}`))*/
     });
 
     /**

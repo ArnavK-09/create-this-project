@@ -16,7 +16,7 @@
 - Visit the [GitHub Marketplace page](https://github.com/marketplace/actions/publish-idea-as-issue) for the action.
 - Click on the "Set up a workflow" button.
 - Choose the repository where you want to use the action.
-- Add ` GEMINI_API_KEY ` secret in your repository secrets from settings
+- Add `GEMINI_API_KEY` secret in your repository secrets from settings
 - Create a new workflow file (e.g., `.github/workflows/convert-pull-request-title.yml`).
 - **Add the following code to the workflow file:**
 
@@ -25,12 +25,12 @@ name: Post Project Idea as Issue...
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Every Day
+    - cron: "0 0 * * *" # Every Day
 
 jobs:
   idea_as_issue:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       issues: write
     steps:
       - name: Action to create issues stating ideas for new projects!
@@ -42,14 +42,18 @@ jobs:
 
 ### 2. 🍬 **Action Inputs**
 
-| Input Name       | Description                                                                                                     |
-| ---------------- | --------------------------------------------------------------------------------------------------------------- |
-| `gemini_api_key` | The API key for accessing the Google Gemini LLM API.                                                            |
-| `token`          | The GitHub token for authentication and authorization. Use `${{ secrets.GITHUB_TOKEN }}` to access it securely. |
+| Input Name         | Description                                                                                                     | Required | Default                                                                                   |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------- |
+| `gemini_api_key`   | The API key for accessing the Google Gemini LLM API.                                                            | true     |                                                                                           |
+| `difficulties`     | Give difficulties for ideas to choose from...seperated by commas                                                | false    | Hard, Medium, Easy, Super-Easy, Hardest, Moderate                                         |
+| `libs`             | Give libs or languages for ideas to choose from...seperated by commas                                           | false    | Javascript, Typescript, Python, Scala, React.js, Angular, Vue, Nodejs, Discord.js, Pygame |
+| `token`            | The GitHub token for authentication and authorization. Use `${{ secrets.GITHUB_TOKEN }}` to access it securely. | true     |                                                                                           |
+| `custom_additions` | Any extra custom additions you want in issue creations                                                          | false    |                                                                                           |
 
 > [!TIP]
 >
-> ##### 🍗 Example Usage 
+> ##### 🍗 Example Usage
+>
 > You can preview this action working **[here](https://github.com/ArnavK-09/create-this-project/issues)!**
 
 ---
