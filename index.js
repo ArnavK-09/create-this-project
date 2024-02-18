@@ -26,7 +26,7 @@ const generateRandomColor = () =>
  */
 const createLabelIfNotThere = async (label, octokit, repo) => {
   // checking label there
-  core.debug(`Fetching Label:- ${label}`);
+  core.notice(`Fetching Label:- ${label}`);
   const data = await octokit.request(
     `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`,
   );
