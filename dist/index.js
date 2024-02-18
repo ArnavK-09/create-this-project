@@ -31744,25 +31744,28 @@ const generateRandomColor = () =>
  * @param octokit
  * @param {string} repo
  */
-const createLabelIfNotThere = async (label, octokit, repo) => {
-  // checking label there
-  core.notice(`Fetching Label:- ${label}`);
-  const data = await octokit.request(
-    `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`,
-  );
-  if (data.status !== 200) {
-    // creating new label
-    const COLOR = generateRandomColor().replace("#", "");
-    core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`);
-    octokit.request(
-      `POST /repos/${repo.owner}/${repo.repo}/labels/${label}`,
-      {
-        ...repo,
-        name: label.toString(),
-        color: COLOR,
-      },
+const createLabelIfNotThere = (label, octokit, repo) => {
+  return new Promise(async (resolve) => {
+    // checking label there
+    core.notice(`Fetching Label:- ${label}`);
+    const data = await octokit.request(
+      `GET /repos/${repo.owner}/${repo.repo}/labels/${label}`,
     );
-  }
+    core.debug(`Fetching Label/Status:- ${label} // ${data.status}`);
+    if (data.status !== 200) {
+      // creating new label
+      const COLOR = generateRandomColor().replace("#", "");
+      core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`);
+      await octokit
+        .request(`POST /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
+          ...repo,
+          name: label.toString(),
+          color: COLOR,
+        })
+        .catch(() => {});
+    }
+    resolve(true);
+  });
 };
 
 /**
@@ -31875,8 +31878,9 @@ const executeAction = async () => {
      * Regulating Labels
      */
     const ISSUE_LABELS = [DIFFICULTY, LIB];
+    const ISSUE_PROMISES = [];
     ISSUE_LABELS.forEach((x) => {
-      createLabelIfNotThere(x, octokit, GH_REPO);
+      ISSUE_PROMISES.push(createLabelIfNotThere(x, octokit, GH_REPO));
     });
 
     /**
@@ -31891,11 +31895,13 @@ const executeAction = async () => {
      * Create a comment on the PR with the information we compiled from the
      * list of changed files.
      */
-    await octokit.rest.issues.create({
-      ...GH_REPO,
-      title: ISSUE_DATA.title ?? `Create me project for '${LIB}'`,
-      body: ISSUE_DATA.body ?? "",
-      labels: ISSUE_LABELS,
+    Promise.all(ISSUE_PROMISES).then(async () => {
+      await octokit.rest.issues.create({
+        ...GH_REPO,
+        title: ISSUE_DATA.title ?? `Create me project for '${LIB}'`,
+        body: ISSUE_DATA.body ?? "",
+        labels: ISSUE_LABELS,
+      });
     });
     core.debug("Action completed");
   } catch (error) {
