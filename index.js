@@ -44,13 +44,10 @@ const createLabelIfNotThere = (label, octokit, repo) => {
 
 /**
  * Create a comment on the PR with the information we compiled from the list of changed files.
- * @param octokit
- * @param {string[]} data
- * @param {string[]} labels
- * @returns
  */
 const createIssue = (octokit, data, labels, GH_REPO, LIB) => {
   return new Promise(async (resolve) => {
+    console.debug("Init creating issue");
     await octokit.rest.issues
       .create({
         ...GH_REPO,
@@ -62,7 +59,10 @@ const createIssue = (octokit, data, labels, GH_REPO, LIB) => {
         core.notice(`Created Issue!`);
         resolve(true);
       })
-      .catch(() => resolve(false));
+      .catch((e) => {
+        core.warning(`Unable to create Issue :( :- ${e}`);
+        resolve(false);
+      });
   });
 };
 
@@ -202,8 +202,8 @@ const executeAction = async () => {
     /**
      * Execute all logics
      */
-    Promise.allSettled(ISSUE_PROMISES).then(async () => {
-      core.debug("Action completed");
+    Promise.allSettled(ISSUE_PROMISES).then(async (e) => {
+      core.info("Action completed", e);
     });
   } catch (error) {
     /**
