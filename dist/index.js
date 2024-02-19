@@ -31778,6 +31778,30 @@ const createLabelIfNotThere = (label, octokit, repo) => {
 };
 
 /**
+ * Create a comment on the PR with the information we compiled from the list of changed files.
+ * @param octokit
+ * @param {string[]} data
+ * @param {string[]} labels
+ * @returns
+ */
+const createIssue = (octokit, data, labels) => {
+  return new Promise(async (resolve) => {
+    await octokit.rest.issues
+      .create({
+        ...GH_REPO,
+        title: data[0] ?? `🍳 Create me project for '${LIB}'`,
+        body: data[1] ?? "",
+        labels: labels,
+      })
+      .then(() => {
+        core.notice(`Created Issue!`);
+        resolve(true);
+      })
+      .catch(() => resolve(false));
+  });
+};
+
+/**
  * Create prompt for google's gemini
  * @param {string} lib
  * @param {string} difficulty
@@ -31888,15 +31912,6 @@ const executeAction = async () => {
     );
 
     /**
-     * Regulating Labels
-     */
-    const ISSUE_LABELS = [DIFFICULTY, LIB];
-    const ISSUE_PROMISES = [];
-    ISSUE_LABELS.forEach((x) => {
-      ISSUE_PROMISES.push(createLabelIfNotThere(x, octokit, GH_REPO));
-    });
-
-    /**
      * Parse content
      */
     const RES = NEW_ISSUE_CONTENT.response.text().toString().trim();
@@ -31904,18 +31919,25 @@ const executeAction = async () => {
     const ISSUE_DATA = RES.split("|||");
 
     /**
-     * Create a comment on the PR with the information we compiled from the
-     * list of changed files.
+     * Regulating Labels
      */
-    // Promise.allSettled(ISSUE_PROMISES).then(async () => {
-      await octokit.rest.issues.create({
-        ...GH_REPO,
-        title: ISSUE_DATA[0] ?? `🍳 Create me project for '${LIB}'`,
-        body: ISSUE_DATA[1] ?? "",
-        labels: ISSUE_LABELS,
-      });
-    // });
-    core.debug("Action completed");
+    const ISSUE_LABELS = [DIFFICULTY, LIB];
+    const ISSUE_PROMISES = [];
+
+    /**
+     * Adding funcs
+     */
+    ISSUE_LABELS.forEach((x) => {
+      ISSUE_PROMISES.push(createLabelIfNotThere(x, octokit, GH_REPO));
+    });
+    ISSUE_PROMISES.push(createIssue(octokit, ISSUE_DATA, ISSUE_LABELS));
+
+    /**
+     * Execute all logics
+     */
+    Promise.allSettled(ISSUE_PROMISES).then(async () => {
+      core.debug("Action completed");
+    });
   } catch (error) {
     /**
      * Any error during action recorded
