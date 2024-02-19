@@ -34,7 +34,10 @@ const createLabelIfNotThere = (label, octokit, repo) => {
         name: label.toString(),
         color: COLOR,
       })
-      .then(() => resolve(true))
+      .then(() => {
+        core.notice(`Created Label For:- ${label} | With Color:- ${COLOR}`);
+        resolve(true);
+      })
       .catch(() => resolve(false));
   });
 };
@@ -48,19 +51,23 @@ const createLabelIfNotThere = (label, octokit, repo) => {
  */
 const generateGeminiPrompt = (lib, difficulty, custom_prompt) => {
   return `
-# Your task is to give me a programming challenge of ${lib.toUpperCase()} of difficulty ${difficulty.toUpperCase()}. Act like you don't know how to resolve this challenge.
-${custom_prompt ? `You shall follow this instructions: ${custom_prompt}` : ""} 
+  # Your task is to give me a programming challenge of ${lib.toUpperCase()} of difficulty ${difficulty.toUpperCase()}. Act like you don't know how to resolve this challenge.
+  ${
+    custom_prompt ? `You shall follow this instructions: ${custom_prompt}` : ""
+  } 
 
-# !! Your response should be in JSON format strictly following scheme:-
-{
-  "title": "Title for challege including emoji at starting",
-  "body": "Description for this challenge with requirements and example and minimal guidance! MAKE SURE YOU TYPE BODY IN MARKDOWN! use \\n for new lines, give content of body in single line, to make VALID JSON STRING"
-}
+  # !! Your response should be in format strictly following scheme:-
   
-# Extra instructions:-
-Make sure you respond with a challenge in respect to ${lib}.
-Response with only raw and VALID JSON content, not in codeblock.
-`.trim();
+  \`
+  (TITLE) Title for challenge including EMOJIi at starting ||| (DESCRIPTION) Description for this challenge with requirements and example and minimal guidance! MAKE SURE YOU TYPE BODY/DESCRIPTION IN MARKDOWN! Also add example usage and example if there, ELABORATE MUCH
+  \`
+  
+  ## SEPERATED BY ||| && all content in single line, use \\n for new lines
+    
+  # Extra instructions:-
+  Make sure you respond with a challenge in respect to ${lib.toUpperCase()}.
+  Response with only raw and VALID text content, SEPERATED BY ||| (triple pipes), not in code block.
+  `.trim();
 };
 
 /**
@@ -159,18 +166,17 @@ const executeAction = async () => {
      */
     const RES = NEW_ISSUE_CONTENT.response.text().toString().trim();
     core.debug(`Gemini's Raw Response:- ${RES}`);
-    const ISSUE_DATA = JSON.parse(RES);
-    core.debug(`Gemini's JSON Response:- ${JSON.stringify(ISSUE_DATA)}`);
+    const ISSUE_DATA = RES.split("|||");
 
     /**
      * Create a comment on the PR with the information we compiled from the
      * list of changed files.
      */
-    Promise.all(ISSUE_PROMISES).then(async () => {
+    Promise.allSettled(ISSUE_PROMISES).then(async () => {
       await octokit.rest.issues.create({
         ...GH_REPO,
-        title: ISSUE_DATA.title ?? `Create me project for '${LIB}'`,
-        body: ISSUE_DATA.body ?? "",
+        title: ISSUE_DATA[0] ?? `🍳 Create me project for '${LIB}'`,
+        body: ISSUE_DATA[1] ?? "",
         labels: ISSUE_LABELS,
       });
     });
