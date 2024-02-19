@@ -31907,14 +31907,14 @@ const executeAction = async () => {
      * Create a comment on the PR with the information we compiled from the
      * list of changed files.
      */
-    Promise.allSettled(ISSUE_PROMISES).then(async () => {
+    // Promise.allSettled(ISSUE_PROMISES).then(async () => {
       await octokit.rest.issues.create({
         ...GH_REPO,
         title: ISSUE_DATA[0] ?? `🍳 Create me project for '${LIB}'`,
         body: ISSUE_DATA[1] ?? "",
         labels: ISSUE_LABELS,
       });
-    });
+    // });
     core.debug("Action completed");
   } catch (error) {
     /**
