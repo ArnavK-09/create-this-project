@@ -47,22 +47,24 @@ const createLabelIfNotThere = (label, octokit, repo) => {
  */
 const createIssue = (octokit, data, labels, GH_REPO, LIB) => {
   return new Promise(async (resolve) => {
-    console.debug("Init creating issue");
-    await octokit.rest.issues
-      .create({
-        ...GH_REPO,
-        title: data[0] ?? `🍳 Create me project for '${LIB}'`,
-        body: data[1] ?? "",
-        labels: labels,
-      })
-      .then(() => {
-        core.notice(`Created Issue!`);
-        resolve(true);
-      })
-      .catch((e) => {
-        core.warning(`Unable to create Issue :( :- ${e}`);
-        resolve(false);
-      });
+    setTimeout(async () => {
+      console.debug("Init creating issue");
+      await octokit.rest.issues
+        .create({
+          ...GH_REPO,
+          title: data[0] ?? `🍳 Create me project for '${LIB}'`,
+          body: data[1] ?? "",
+          labels: labels,
+        })
+        .then(() => {
+          core.notice(`Created Issue!`);
+          resolve(true);
+        })
+        .catch((e) => {
+          core.warning(`Unable to create Issue :( :- ${e}`);
+          resolve(false);
+        });
+    }, 1000 * 20);
   });
 };
 
