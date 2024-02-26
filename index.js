@@ -229,7 +229,7 @@ const executeAction = async () => {
         break
       } else {
         let x = ISSUE_LABELS[i];
-        if (x) createLabelIfNotThere(x, ocotokit, GH_REPO);
+        if (x) createLabelIfNotThere(x, octokit, GH_REPO);
         else continue
       }
       i++;
