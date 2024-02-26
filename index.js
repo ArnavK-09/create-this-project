@@ -194,9 +194,9 @@ const executeAction = async () => {
     /**
      * Adding funcs
      */
-    ISSUE_LABELS.forEach((x) => {
-      ISSUE_PROMISES.push(createLabelIfNotThere(x, octokit, GH_REPO));
-    });
+    // ISSUE_LABELS.forEach((x) => {
+    //   ISSUE_PROMISES.push(createLabelIfNotThere(x, octokit, GH_REPO));
+    // });
     ISSUE_PROMISES.push(
       createIssue(octokit, ISSUE_DATA, ISSUE_LABELS, GH_REPO, LIB),
     );
