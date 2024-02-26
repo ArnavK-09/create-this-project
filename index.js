@@ -19,12 +19,12 @@ const generateRandomColor = () =>
   Math.floor(Math.random() * 16777215).toString(16);
 
 /**
- * Create label for repo if not there
+ * Create label for repo if not there (async)
  * @param {string} label
  * @param octokit
  * @param {string} repo
  */
-const createLabelIfNotThere = (label, octokit, repo) => {
+const createLabelIfNotThereAsync = (label, octokit, repo) => {
   return new Promise(async (resolve) => {
     const COLOR = generateRandomColor().replace("#", "");
     core.notice(`Creating Label For:- ${label} | With Color:- ${COLOR}`);
@@ -40,6 +40,24 @@ const createLabelIfNotThere = (label, octokit, repo) => {
       })
       .catch(() => resolve(false));
   });
+};
+
+/**
+ * Create label for repo if not there
+ * @param {string} label
+ * @param octokit
+ * @param {string} repo
+ */
+const createLabelIfNotThere = (label, octokit, repo) => {
+  try {
+    const COLOR = generateRandomColor().replace("#", "");
+    octokit.request(`POST /repos/${repo.owner}/${repo.repo}/labels/${label}`, {
+      ...repo,
+      name: label.toString(),
+      color: COLOR,
+    });
+    core.notice(`Creating Label For:- ${label} || With Color:- ${COLOR}`);
+  } catch {}
 };
 
 /**
@@ -171,11 +189,11 @@ const executeAction = async () => {
      * Generating title with gemini
      */
     const NEW_ISSUE_CONTENT = await GOOGLE_GEMINI.generateContent(
-      generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined),
+      generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
     );
     core.debug(
       "Using prompt:-" +
-        generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined),
+        generateGeminiPrompt(LIB, DIFFICULTY, GH_ISSUE_ADDITIIONS ?? undefined)
     );
 
     /**
@@ -189,7 +207,7 @@ const executeAction = async () => {
      * Regulating Labels
      */
     const ISSUE_LABELS = [DIFFICULTY, LIB];
-    const ISSUE_PROMISES = [];
+    // const ISSUE_PROMISES = [];
 
     /**
      * Adding funcs
@@ -197,16 +215,32 @@ const executeAction = async () => {
     // ISSUE_LABELS.forEach((x) => {
     //   ISSUE_PROMISES.push(createLabelIfNotThere(x, octokit, GH_REPO));
     // });
-    ISSUE_PROMISES.push(
-      createIssue(octokit, ISSUE_DATA, ISSUE_LABELS, GH_REPO, LIB),
-    );
+    // ISSUE_PROMISES.push(
+    //   createIssue(octokit, ISSUE_DATA, ISSUE_LABELS, GH_REPO, LIB),
+    // );
+
+    /**
+     * Creating labels
+     */
+    let i = 0;
+    while (true) {
+      if (i == 2) {
+        createIssue(octokit, ISSUE_DATA, ISSUE_LABELS, GH_REPO, LIB);
+        break
+      } else {
+        let x = ISSUE_LABELS[i];
+        if (x) createLabelIfNotThere(x, ocotokit, GH_REPO);
+        else continue
+      }
+      i++;
+    }
 
     /**
      * Execute all logics
      */
-    Promise.allSettled(ISSUE_PROMISES).then(async (e) => {
-      core.info("Action completed", e);
-    });
+    // Promise.allSettled(ISSUE_PROMISES).then(async (e) => {
+    //   core.info("Action completed", e);
+    // });
   } catch (error) {
     /**
      * Any error during action recorded
