@@ -1,6 +1,6 @@
 name: Initiate Challenges...
 
-on:
+non:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *' # Every Day
